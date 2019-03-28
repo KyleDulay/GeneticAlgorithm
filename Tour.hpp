@@ -12,10 +12,15 @@ class Tour{
 private:
     int tourSize;
     double fitness;
+
 public:
-    std::vector<City> tour;
+    std::vector<City*> tour;
+    Tour(){};
     Tour(std::vector<City> c, int size);
+    Tour(Tour a, Tour b, int size);
+    int getTourSize();
     double tourFitness();
+    double getFitness();
 
 };
 #endif //GENETICALGORITHM_TOUR_HPP

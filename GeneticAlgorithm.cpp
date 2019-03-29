@@ -79,7 +79,7 @@ void GeneticAlgorithm::crossover() {
 
     }
 
-    std::cout << "\n----------REPORT---------" << std::endl;
+    std::cout << "\n----------REPORT: Results after 1000 iterations---------" << std::endl;
     std::cout<< "First Elite Tour: " << baseFitness << std::endl;
     std::cout << "Current Elite Tour: " << population.at(0).getFitness() << std::endl;
     double improvement = ((baseFitness - population.at(0).getFitness()) / baseFitness) * 100;

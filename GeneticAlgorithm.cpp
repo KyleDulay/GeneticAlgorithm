@@ -31,89 +31,59 @@ GeneticAlgorithm::GeneticAlgorithm(int numCities, int sizePopulation) {
         }
     }
 
-    //Print out the baseline fitness
-    std::cout<<"BASELINE FITNESS LEVEL: "<<population.at(0).getFitness()<<std::endl;
+    //Keep track of our baseline fitness
+    baseFitness = population.at(0).getFitness();
 
     //Now that we have our master city list and initial population,
     //we can run the findElite() function to iteratively improve our
     //population in order to find the fittest tour
-    findElite();
+    crossover();
 }
 
-//findElite will implement the genetic algorithm to find the fittest tour
-void GeneticAlgorithm::findElite() {
+//Crossover function
+//Create array of tours that is size population - 1
+//Replace everything but the first index in our current population
+//Find elite
+//Repeat
+void GeneticAlgorithm::crossover() {
 
-    std::vector<Tour> crosses;
-    int iter = 0;
+    //The number of crossed tours we need
+    int numCrosses = POPULATION_SIZE - 1;
 
-    while (iter < 1000){
+    int count = 0;
 
-        crosses.clear();
-        std::cout<<"POP SIZE: " << population.size() << std::endl;
-        for(int i = 1; i < population.size(); i++){
-            crosses.push_back(crossover());
+    while(count < 1000){
+
+        //Create array for our crossed tours
+        Tour crosses[numCrosses];
+
+        //Generate crossed tours, there is a constructor in Tour class
+        //which takes a population of tours as an argument and generates
+        //a new tour based off the genetics of the population
+        for(int i = 0; i < numCrosses; i++){
+            Tour t = Tour(population);
+            crosses[i] = t;
         }
 
-        for(int i = 1; i < crosses.size(); i++){
-            if(crosses.at(i).getFitness() < population.at(0).getFitness()){
-                population.insert(population.begin(), crosses.at(i));
-            } else {
-                population[i] = crosses[i];
+
+        for(int i = 1; i < numCrosses + 1; i++){
+            population.at(i) = crosses[i-1];
+            if(crosses[i-1].getFitness() < population.at(0).getFitness()){
+                double improvement = ((population.at(0).getFitness() - crosses[i-1].getFitness()) / population.at(0).getFitness()) * 100;
+                std::swap(population.at(0), population.at(i));
+                std::cout<< "New Elite Tour: " << population.at(0).getFitness() << "\tImprovement: " << improvement << "%" << std::endl;
             }
         }
 
-        std::cout << "Elite: " << population[0].getFitness() << std::endl;
-        iter++;
+        count++;
+
     }
 
-}
-
-Tour GeneticAlgorithm::crossover() {
-
-    int subsetSize = 5;
-    double min = 100000;
-    Tour eliteOne;
-    Tour eliteTwo;
-    std::vector<Tour> populationCopy = population;
-    std::vector<Tour> subset;
-
-    //Get 2 parents
-    for(int i = 0; i < NUMBER_PARENTS; i++){
-        //Create variable for parent of current subset
-        Tour elite;
-        //Generate seed to randomly shuffle the tour
-        long seed = std::chrono::system_clock::now().time_since_epoch().count();
-        //Shuffle tour
-        std::shuffle(std::begin(populationCopy), std::end(populationCopy), std::default_random_engine(seed));
-
-        //Randomly select 5 tours after shuffling
-        for(int j = 0; j < subsetSize; j++){
-            //Add first element to subset
-            subset.push_back(populationCopy.at(j));
-        }
-
-        //Find the most elite of the 5 tours
-        for(int k = 0; k < subset.size(); k++){
-            if (subset.at(k).getFitness() < min){
-                elite = subset.at(k);
-                min = elite.getFitness();
-            }
-        }
-
-        //Define the elite parents
-        if(i == 0){
-            eliteOne = elite;
-        } else {
-            eliteTwo = elite;
-        }
-
-        subset.clear();
-        min = 100000;
-    }
-
-    std::cout<<"Elite One: " << eliteOne.getFitness() << std::endl;
-    std::cout<<"Elite Two: " << eliteTwo.getFitness() << std::endl;
-    return Tour(eliteOne, eliteTwo, CITIES_IN_TOUR);
+    std::cout << "\n----------REPORT---------" << std::endl;
+    std::cout<< "First Elite Tour: " << baseFitness << std::endl;
+    std::cout << "Current Elite Tour: " << population.at(0).getFitness() << std::endl;
+    double improvement = ((baseFitness - population.at(0).getFitness()) / baseFitness) * 100;
+    std::cout << "Overall Improvement: " << improvement << "%" << std::endl;
 }
 
 //makeCityList function will generate the initial master list
@@ -127,7 +97,7 @@ void GeneticAlgorithm::makeCityList() {
         randX = randInt();
         randY = randInt();
         generateName(str);
-        cityList.push_back(City(str, randX, randY));
+        cityList.emplace_back(City(str, randX, randY));
     }
 }
 

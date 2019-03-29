@@ -16,8 +16,8 @@ private:
 public:
     std::vector<City*> tour;
     Tour(){};
-    Tour(std::vector<City> c, int size);
-    Tour(Tour a, Tour b, int size);
+    Tour(std::vector<City>& c, int size);
+    Tour(std::vector<Tour> p);
     int getTourSize();
     double tourFitness();
     double getFitness();

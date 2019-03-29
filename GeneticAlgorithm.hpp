@@ -14,6 +14,7 @@ class GeneticAlgorithm{
 private:
     const int CITY_NAME_SIZE = 10;
     double minFitness = 100000; //We will use this as a baseline for the fittest tour
+    double baseFitness;
     int NUMBER_PARENTS = 2;
     int CITIES_IN_TOUR;
     int POPULATION_SIZE;
@@ -23,10 +24,9 @@ private:
 
 public:
     GeneticAlgorithm(int numCities, int sizePopulation);
-    void findElite();
     void makeCityList();
     void generateName(char *s);
-    Tour crossover();
+    void crossover();
     int randInt();
 
 

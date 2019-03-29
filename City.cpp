@@ -26,3 +26,6 @@ int City::getX() const {return this->x;}
 
 //Getter for Y coordinate
 int City::getY() const {return this->y;}
+
+//Getter for city name
+std::string City::getName() {return this->name;}

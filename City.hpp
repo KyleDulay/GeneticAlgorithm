@@ -19,6 +19,7 @@ private:
 public:
     City();
     City(std::string name, int x, int y);
+    std::string getName();
     int getX() const;
     int getY() const;
 

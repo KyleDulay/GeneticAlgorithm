@@ -52,8 +52,12 @@ void GeneticAlgorithm::crossover() {
 
     int count = 0;
 
-    while(count < 1000){
+    double currentImprovement = 0;
 
+    while(count <= 1000 && currentImprovement <= 35){
+
+        //Total improvement rate
+        currentImprovement = ((baseFitness - population.at(0).getFitness()) / baseFitness) * 100;
         //Create array for our crossed tours
         Tour crosses[numCrosses];
 
@@ -68,10 +72,14 @@ void GeneticAlgorithm::crossover() {
 
         for(int i = 1; i < numCrosses + 1; i++){
             population.at(i) = crosses[i-1];
+            double improvement = ((population.at(0).getFitness() - crosses[i-1].getFitness()) / population.at(0).getFitness()) * 100;
             if(crosses[i-1].getFitness() < population.at(0).getFitness()){
-                double improvement = ((population.at(0).getFitness() - crosses[i-1].getFitness()) / population.at(0).getFitness()) * 100;
+                std::cout<< "Iteration : " << count << "\tDistance: " << crosses[i-1].getFitness() << "\tBest: "
+                << population.at(0).getFitness() << "\tImproved: YES" << "\tImprovement: " << improvement << "%" << std::endl;
                 std::swap(population.at(0), population.at(i));
-                std::cout<< "New Elite Tour: " << population.at(0).getFitness() << "\tImprovement: " << improvement << "%" << std::endl;
+            } else {
+                std::cout<< "Iteration : " << count << "\tDistance: " << crosses[i-1].getFitness() << "\tBest: "
+                << population.at(0).getFitness() << "\tImproved: NO" << "\tImprovement: " << improvement << "%" << std::endl;
             }
         }
 
@@ -79,11 +87,16 @@ void GeneticAlgorithm::crossover() {
 
     }
 
-    std::cout << "\n----------REPORT: Results after 1000 iterations---------" << std::endl;
-    std::cout<< "First Elite Tour: " << baseFitness << std::endl;
-    std::cout << "Current Elite Tour: " << population.at(0).getFitness() << std::endl;
+    std::cout << "\n----------REPORT: Results after " << count << " iterations---------" << std::endl;
+    std::cout<< "Base distance: " << baseFitness << std::endl;
+    std::cout << "Best distance: " << population.at(0).getFitness() << std::endl;
     double improvement = ((baseFitness - population.at(0).getFitness()) / baseFitness) * 100;
-    std::cout << "Overall Improvement: " << improvement << "%" << std::endl;
+    std::cout << "Overall improvement: " << improvement << "%" << std::endl;
+    if(currentImprovement >= 35){
+        std::cout<< "Improvement factor reached: YES" << std::endl;
+    } else {
+        std::cout<< "Improvement factor reached: NO" << std::endl;
+    }
 }
 
 //makeCityList function will generate the initial master list
